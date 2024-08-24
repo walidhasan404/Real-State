@@ -24,23 +24,23 @@ const Login = () => {
 
     const handleGoogleSignIn = () => {
         signInWithPopup(auth, new GoogleAuthProvider())
-            .then(result => {
+            .then(() => {
                 setSuccess('Logged in successfully');
                 navigateAfterLogin();
             })
             .catch(error => {
-                console.log('error', error.message);
+                setLogError(error.message);
             });
     };
 
     const handleFacebookSignIn = () => {
         signInWithPopup(auth, new FacebookAuthProvider())
-            .then(result => {
+            .then(() => {
                 setSuccess('Logged in successfully');
                 navigateAfterLogin();
             })
             .catch(error => {
-                console.log('error', error.message);
+                setLogError(error.message);
             });
     };
 
@@ -50,7 +50,7 @@ const Login = () => {
                 setSuccess('Logged out successfully');
             })
             .catch(error => {
-                console.log(error);
+                setLogError(error.message);
             });
     };
 
@@ -64,7 +64,6 @@ const Login = () => {
             setSuccess('User logged in successfully');
             navigateAfterLogin();
         } catch (error) {
-            console.error(error);
             setLogError(error.message);
         }
     };
@@ -76,51 +75,60 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content flex-col">
-                    <div className="text-center lg:text-left">
-                        <h1 className="text-4xl font-bold">Login now</h1>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg">
+                <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
+                <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Email</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            {...register("email", { required: "Email is required" })} 
+                            placeholder="Enter your email" 
+                            className="input input-bordered w-full" 
+                        />
+                        {errors.email && <p className="text-red-600 mt-1">{errors.email.message}</p>}
                     </div>
-                    <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                        <form onSubmit={handleSubmit(handleLogin)} className="card-body">
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Email</span>
-                                </label>
-                                <input type="email" {...register("email", { required: true })} placeholder="email" className="input input-bordered" />
-                            </div>
-                            {errors.email && <p className="text-red-700">Email is required</p>}
-                            <div className="form-control relative">
-                                <label className="label">
-                                    <span className="label-text">Password</span>
-                                </label>
-                                <input type={showPass ? "text" : "password"} {...register("password", { required: true })} placeholder="password" className="input input-bordered" />
-                                <span className="absolute top-2/3 right-3 transform -translate-y-1/2 cursor-pointer" onClick={() => setShowPass(!showPass)}>
-                                    {showPass ? <IoMdEyeOff /> : <IoMdEye />}
-                                </span>
-                            </div>
-                            {errors.password && <p className="text-red-700">Password is required</p>}
-                            <div className="form-control mt-6">
-                                <button type="submit" className="btn btn-outline">Login</button>
-                            </div>
-                        </form>
-                        {logError && <p className="text-red-700">{logError}</p>}
-                        {success && <p className="text-green-600">{success}</p>}
-                        <div>
-                            {!user && (
-                                <>
-                                    <h2 className="text-lg font-semibold text-center">Log In With</h2>
-                                    <div className='flex gap-2 justify-center'>
-                                        <button className="btn btn-outline" onClick={handleGoogleSignIn}>Google SignIn</button>
-                                        <button className="btn btn-outline" onClick={handleFacebookSignIn}>Facebook LogIn</button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                        <p className="text-base p-4">New to the website? Please <Link className='text-lg font-bold' to="/register">Register</Link></p>
+                    <div className="form-control relative">
+                        <label className="label">
+                            <span className="label-text">Password</span>
+                        </label>
+                        <input 
+                            type={showPass ? "text" : "password"} 
+                            {...register("password", { required: "Password is required" })} 
+                            placeholder="Enter your password" 
+                            className="input input-bordered w-full" 
+                        />
+                        <span 
+                            className="absolute top-14 right-3 transform -translate-y-1/2 cursor-pointer" 
+                            onClick={() => setShowPass(!showPass)}
+                        >
+                            {showPass ? <IoMdEyeOff /> : <IoMdEye />}
+                        </span>
+                        {errors.password && <p className="text-red-600 mt-1">{errors.password.message}</p>}
                     </div>
+                    <div className="form-control mt-4">
+                        <button type="submit" className="btn btn-primary w-full">Login</button>
+                    </div>
+                </form>
+                {logError && <p className="text-red-600 mt-4">{logError}</p>}
+                {success && <p className="text-green-600 mt-4">{success}</p>}
+                <div className="text-center mt-6">
+                    {!user && (
+                        <>
+                            <h2 className="text-lg font-semibold">Log In With</h2>
+                            <div className='flex gap-4 justify-center mt-4'>
+                                <button className="btn btn-outline" onClick={handleGoogleSignIn}>Google</button>
+                                <button className="btn btn-outline" onClick={handleFacebookSignIn}>Facebook</button>
+                            </div>
+                        </>
+                    )}
                 </div>
+                <p className="text-center mt-6">
+                    New to the website? Please <Link className='text-blue-600 font-semibold' to="/register">Register</Link>
+                </p>
             </div>
         </div>
     );
