@@ -16,6 +16,7 @@ import AuthProvider from './Components/Providers/AuthProvider';
 import UpdateProfile from './Components/UpdateProfile/UpdateProfile';
 import ContactUs from './Components/ContactUs/ContactUs';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
+import EstatesCard from './Components/Estates/EstatesCard';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home title="Home"></Home>,
-        loader: () => fetch('Estates.json')
+        loader: () => fetch('/Estates.json')
       },
       {
         path: '/estate/:id',
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/contact',
-        element: <PrivateRoute><ContactUs title="Contact Us"></ContactUs></PrivateRoute>
+        element: <ContactUs title="Contact Us"></ContactUs>
       },
       {
         path: '/update',
@@ -56,7 +57,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <div className='max-w-7xl mx-auto'>
+        <RouterProvider router={router} />
+      </div>
     </AuthProvider>
   </React.StrictMode>,
 )

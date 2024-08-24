@@ -7,7 +7,10 @@ import auth from "../../firebase/firebase.config";
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
+
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     const createUser = (email, password) => {
         createUserWithEmailAndPassword(auth, email, password)
     }
@@ -15,6 +18,7 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
+            setLoading(false);
         });
         return () =>{
             unSubscribe();
@@ -38,8 +42,8 @@ const AuthProvider = ({ children }) => {
     );
 };
 
-export default AuthProvider;
-
 AuthProvider.propTypes = {
     children: PropTypes.node
 }
+
+export default AuthProvider;

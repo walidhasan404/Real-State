@@ -1,39 +1,43 @@
 import { useForm } from 'react-hook-form';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { AuthContext } from "../Providers/AuthProvider";
+import auth from '../../firebase/firebase.config';
 
 const Login = () => {
     const [logError, setLogError] = useState('');
     const [success, setSuccess] = useState('');
     const [showPass, setShowPass] = useState(false);
-    const [user, setUser] = useState(null);
-    const googleProvider = new GoogleAuthProvider();
-    const facebookProvider = new FacebookAuthProvider();
-    const { logInUser } = useContext(AuthContext);
+    const { logInUser, user } = useContext(AuthContext);
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            const lastVisited = localStorage.getItem('lastVisited') || '/';
+            localStorage.removeItem('lastVisited');
+            navigate(lastVisited);
+        }
+    }, [user, navigate]);
 
     const handleGoogleSignIn = () => {
-        signInWithPopup(auth, googleProvider)
+        signInWithPopup(auth, new GoogleAuthProvider())
             .then(result => {
-                const loggedInUser = result.user;
-                console.log(loggedInUser);
-                setUser(loggedInUser);
+                setSuccess('Logged in successfully');
+                navigateAfterLogin();
             })
             .catch(error => {
                 console.log('error', error.message);
-            })
-    }
+            });
+    };
 
     const handleFacebookSignIn = () => {
-        signInWithPopup(auth, facebookProvider)
+        signInWithPopup(auth, new FacebookAuthProvider())
             .then(result => {
-                const loggedInUser = result.user;
-                console.log(loggedInUser);
-                setUser(loggedInUser);
+                setSuccess('Logged in successfully');
+                navigateAfterLogin();
             })
             .catch(error => {
                 console.log('error', error.message);
@@ -42,14 +46,13 @@ const Login = () => {
 
     const handleGoogleLogOut = () => {
         signOut(auth)
-            .then(result => {
-                console.log(result);
-                setUser(null);
+            .then(() => {
+                setSuccess('Logged out successfully');
             })
             .catch(error => {
                 console.log(error);
-            })
-    }
+            });
+    };
 
     const handleLogin = async (data) => {
         const { email, password } = data;
@@ -59,31 +62,18 @@ const Login = () => {
         try {
             await logInUser(email, password);
             setSuccess('User logged in successfully');
-            setLogError('');
+            navigateAfterLogin();
         } catch (error) {
             console.error(error);
             setLogError(error.message);
         }
+    };
 
-        if (password.length < 6) {
-            setLogError('Password should be at least 6 characters or longer');
-            return;
-        } else if (!/[A-Z]/.test(password)) {
-            setLogError('Password should contain at least 1 capital letter');
-            return;
-        } else if (!/[a-z]/.test(password)) {
-            setLogError('Password should contain at least 1 lowercase letter');
-            return;
-        }
-
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            setSuccess('User registered successfully');
-        } catch (error) {
-            console.error(error);
-            setLogError(error.message);
-        }
-    }
+    const navigateAfterLogin = () => {
+        const lastVisited = localStorage.getItem('lastVisited') || '/';
+        localStorage.removeItem('lastVisited');
+        navigate(lastVisited);
+    };
 
     return (
         <div>
@@ -118,16 +108,17 @@ const Login = () => {
                         {logError && <p className="text-red-700">{logError}</p>}
                         {success && <p className="text-green-600">{success}</p>}
                         <div>
-                            {user ?
-                                <button onClick={handleGoogleLogOut}>Log Out</button> :
+                            {!user && (
                                 <>
-                                    <h2 className="text-lg">LogIn With</h2>
-                                    <button className="btn btn-outline" onClick={handleGoogleSignIn}>Google SignIn</button>
-                                    <button className="btn btn-outline" onClick={handleFacebookSignIn}>Facebook LogIn</button>
+                                    <h2 className="text-lg font-semibold text-center">Log In With</h2>
+                                    <div className='flex gap-2 justify-center'>
+                                        <button className="btn btn-outline" onClick={handleGoogleSignIn}>Google SignIn</button>
+                                        <button className="btn btn-outline" onClick={handleFacebookSignIn}>Facebook LogIn</button>
+                                    </div>
                                 </>
-                            }
+                            )}
                         </div>
-                        <p className="text-base p-4">New to the website? please <Link className='text-lg font-bold' to="/register">Register</Link></p>
+                        <p className="text-base p-4">New to the website? Please <Link className='text-lg font-bold' to="/register">Register</Link></p>
                     </div>
                 </div>
             </div>

@@ -8,14 +8,14 @@ const Header = () => {
         <li><NavLink to="/">Home</NavLink></li>
         <li><NavLink to="/update">Update Profile</NavLink></li>
         <li><NavLink to="/contact">Contact Us</NavLink></li>
-    </>
+    </>;
 
     const { user, logOut } = useContext(AuthContext);
 
     const handleLogOut = () => {
         logOut()
-            .then(() => console.log('log out successful'))
-            .catch(error => console.log(error))
+            .then(() => console.log('Log out successful'))
+            .catch(error => console.log(error));
     }
 
     return (
@@ -30,7 +30,7 @@ const Header = () => {
                             {navLinks}
                         </ul>
                     </div>
-                    <a className="btn btn-ghost text-xl">Sweet Residences</a>
+                    <a className="text-xl lg:text-2xl font-bold">Sweet Residences</a>
                 </div>
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1">
@@ -41,14 +41,16 @@ const Header = () => {
                     {
                         user ?
                             <>
-                                <div className="tooltip" data-tip={user.email}>
-                                    <button className="btn"><CgProfile /></button>
+                                <div className="tooltip tooltip-bottom" data-tip={user.email}>
+                                    <img className="w-10 h-10 rounded-full mr-3" src={user.photoURL || "default-avatar-url.jpg"} alt="User Profile" />
                                 </div>
                                 <button onClick={handleLogOut} className="btn btn-accent">Log Out</button>
                             </> :
-                            <Link to="/login"><button className="btn btn-accent">LogIn</button></Link>
+                            <>
+                                <button className="btn"><CgProfile /></button>
+                                <Link to="/login"><button className="btn btn-accent">LogIn</button></Link>
+                            </>
                     }
-
                 </div>
             </div>
         </div>
