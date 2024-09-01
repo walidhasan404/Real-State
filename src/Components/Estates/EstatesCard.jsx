@@ -4,7 +4,7 @@ const EstatesCard = ({ estates }) => {
     const { estate_title, image, view_property_button, status5, id } = estates;
 
     return (
-        <div className="card w-96 bg-base-100 shadow-xl p-4">
+        <div className="card w-96 bg-base-100 shadow-xl p-4 mx-auto">
             <figure><img className="h-96" src={image} alt={estate_title} /></figure>
             <div className="card-body">
                 <h2 className="card-title">{estate_title}</h2>
